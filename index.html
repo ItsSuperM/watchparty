@@ -2,31 +2,30 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OdedSVR - One Screen Solution</title>
+    <title>Odedsvr - One Link Solution</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
         
-        /* צד שמאל: סרט ומצלמה */
-        .main-content { flex: 4; display: flex; flex-direction: column; background: #000; }
-        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; }
+        .main-content { flex: 4; display: flex; flex-direction: column; }
+        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; position: relative; }
         .camera-area { flex: 1.2; background: #000; }
 
-        /* צד ימין: הצ'אט המיוחד */
         .sidebar { flex: 1.2; min-width: 320px; background: #18181b; display: flex; flex-direction: column; border-left: 1px solid #333; }
         
-        /* שימוש בגרסה ה"קלה" של קיק שמיועדת לאפליקציות צד שלישי */
-        .chat-iframe { flex: 1; width: 100%; height: 100%; border: none; }
+        /* אזור הצ'אט */
+        #chat-container { flex: 1; width: 100%; position: relative; }
         
-        .fix-button {
-            background: #53fc18;
-            color: #000;
-            text-align: center;
-            padding: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            text-decoration: none;
-            display: block;
+        .sync-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 14, 15, 0.95);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px; z-index: 10;
+        }
+
+        .btn-sync {
+            background: #53fc18; color: #000; padding: 15px 25px; border: none;
+            border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
         }
     </style>
 </head>
@@ -43,18 +42,39 @@
     </div>
 
     <div class="sidebar">
-        <a href="https://kick.com/login" target="login-flow" 
-           onclick="window.open('https://kick.com/login', 'login-flow', 'width=400,height=600'); return false;" 
-           class="fix-button">
-           שלב 1: לחץ כאן להתחברות מהירה (פעם אחת)
-        </a>
-        
-        <iframe 
-            src="https://kick.com/popout/odedsvr/chat?parent=github.io" 
-            class="chat-iframe">
-        </iframe>
+        <div id="chat-container">
+            <iframe id="final-chat" src="" style="width:100%; height:100%; border:none; display:none;"></iframe>
+            
+            <div id="sync-ui" class="sync-overlay">
+                <p style="color: #53fc18; font-weight: bold;">כדי לכתוב בצ'אט בתוך האתר:</p>
+                <button class="btn-sync" onclick="syncAndStart()">סנכרן חשבון קיק</button>
+                <p style="color: #666; font-size: 11px; margin-top: 15px;">הפעולה תפתח חלון התחברות קטן שייסגר אוטומטית ויחבר אותך לאתר.</p>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    function syncAndStart() {
+        const username = 'OdedSVR';
+        const loginUrl = "https://kick.com/login";
+        const chatUrl = `https://kick.com/popout/${username}/chat`;
+
+        // 1. פותח חלון התחברות מקורי של קיק (כדי שכרום יאשר את העוגיות)
+        const authWin = window.open(loginUrl, 'KickAuth', 'width=450,height=600');
+
+        // 2. מחכה 3 שניות (זמן להתחברות/זיהוי) ואז מחליף את הצ'אט בתוך האתר
+        setTimeout(() => {
+            const chatIframe = document.getElementById('final-chat');
+            chatIframe.src = chatUrl;
+            chatIframe.style.display = "block";
+            document.getElementById('sync-ui').style.display = "none";
+            
+            // הצופה יכול לסגור את החלון הקטן ידנית או שהוא יישאר ברקע
+            alert("החשבון סונכרן! עכשיו אפשר לכתוב בצ'אט בתוך האתר.");
+        }, 4000);
+    }
+</script>
 
 </body>
 </html>
