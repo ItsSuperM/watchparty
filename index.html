@@ -6,53 +6,47 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         
-        /* חלוקת המסך לתוכן (שמאל) וסיידבר לצ'אט (ימין) */
-        .main-container { 
+        /* סידור ראשי: תוכן משמאל, צ'אט מימין */
+        .main-layout { 
             display: flex; 
             height: 100vh; 
             width: 100vw; 
         }
 
-        /* אזור הוידאו - מחולק לסרט ולייב אחד מעל השני */
-        .video-section { 
+        /* אזור הוידאו - תופס את רוב המסך */
+        .video-container { 
             flex: 1; 
             display: flex; 
-            flex-direction: column; 
+            flex-direction: column; /* הסרט מעל הלייב */
             background: #000;
         }
 
-        .movie-box { 
-            flex: 2; /* הסרט מקבל יותר שטח */
+        .movie-part { 
+            flex: 2; /* הסרט גדול יותר */
             border-bottom: 2px solid #53fc18; 
         }
 
-        .live-box { 
-            flex: 1; /* הלייב למטה */
+        .live-part { 
+            flex: 1; /* הלייב מתחתיו */
             background: #000;
         }
 
-        /* אזור הצ'אט הקבוע */
-        .chat-sidebar { 
+        /* אזור הצ'אט - בצד ימין */
+        .sidebar-chat { 
             width: 350px; 
             background: #18181b; 
-            display: flex; 
-            flex-direction: column; 
             border-left: 1px solid #333;
-            text-align: center;
-        }
-
-        .setup-area {
-            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            position: relative;
         }
 
         .btn-kick {
             background: #53fc18; color: #000; padding: 15px 25px; border: none;
             border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
+            box-shadow: 0 0 15px rgba(83, 252, 24, 0.3);
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -60,21 +54,20 @@
 </head>
 <body>
 
-<div class="main-container">
-    <div class="video-section">
-        <div class="movie-box">
+<div class="main-layout">
+    <div class="video-container">
+        <div class="movie-part">
             <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
         </div>
-        <div class="live-box">
+        <div class="live-part">
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
     </div>
 
-    <div class="chat-sidebar" id="sidebar">
-        <div class="setup-area" id="setup-content">
+    <div class="sidebar-chat" id="sidebar">
+        <div id="setup-ui">
             <p style="color: #53fc18; font-weight: bold; margin-bottom: 20px;">הצ'אט של OdedSVR</p>
-            <button class="btn-kick" onclick="openChat()">הפעל צ'אט</button>
-            <p style="color: #666; font-size: 11px; margin-top: 15px;">הצ'אט ייפתח בדיוק כאן.</p>
+            <button class="btn-kick" onclick="openChat()">פתח צ'אט מחובר</button>
         </div>
     </div>
 </div>
@@ -85,15 +78,15 @@
         const sidebar = document.getElementById('sidebar');
         const rect = sidebar.getBoundingClientRect();
         
-        // פתיחת הצ'אט במיקום המדויק של הסיידבר
+        // פתיחת הצ'אט בדיוק מעל הסיידבר
         window.open(
             `https://kick.com/popout/${username}/chat`, 
             'KickChat', 
             `width=350,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
         );
 
-        document.getElementById('setup-content').innerHTML = 
-            '<p style="color: #53fc18; margin-top: 50px;">הצ\'אט פעיל!</p><p style="color:#666; font-size:12px;">אם החלון זז, גרור אותו חזרה לכאן.</p>';
+        document.getElementById('setup-ui').innerHTML = 
+            '<p style="color: #53fc18;">הצ\'אט פעיל!</p><p style="color:#666; font-size:12px;">הוא יושב בדיוק כאן.</p>';
     }
 </script>
 
