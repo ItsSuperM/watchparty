@@ -2,51 +2,45 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - OdedSVR</title>
+    <title>Stream Watch Party - Side by Side</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         
-        /* סידור ראשי: תוכן משמאל, צ'אט מימין */
+        /* חלוקה ל-3 טורים */
         .main-layout { 
             display: flex; 
             height: 100vh; 
             width: 100vw; 
+            gap: 2px;
         }
 
-        /* אזור הוידאו - תופס את רוב המסך */
-        .video-container { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; /* הסרט מעל הלייב */
+        /* טור 1: הלייב (צד שמאל) */
+        .live-sidebar { 
+            width: 300px; 
             background: #000;
-        }
-
-        .movie-part { 
-            flex: 2; /* הסרט גדול יותר */
-            border-bottom: 2px solid #53fc18; 
-        }
-
-        .live-part { 
-            flex: 1; /* הלייב מתחתיו */
-            background: #000;
-        }
-
-        /* אזור הצ'אט - בצד ימין */
-        .sidebar-chat { 
-            width: 350px; 
-            background: #18181b; 
             border-left: 1px solid #333;
+        }
+
+        /* טור 2: הסרט (מרכז - הכי גדול) */
+        .movie-center { 
+            flex: 1; 
+            background: #000;
+        }
+
+        /* טור 3: הצ'אט (צד ימין) */
+        .chat-sidebar { 
+            width: 340px; 
+            background: #18181b; 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
+            border-right: 1px solid #333;
         }
 
         .btn-kick {
-            background: #53fc18; color: #000; padding: 15px 25px; border: none;
-            border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
-            box-shadow: 0 0 15px rgba(83, 252, 24, 0.3);
+            background: #53fc18; color: #000; padding: 12px 20px; border: none;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -55,38 +49,34 @@
 <body>
 
 <div class="main-layout">
-    <div class="video-container">
-        <div class="movie-part">
-            <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
-        </div>
-        <div class="live-part">
-            <iframe src="https://player.kick.com/odedsvr"></iframe>
-        </div>
+    <div class="live-sidebar">
+        <iframe src="https://player.kick.com/odedsvr"></iframe>
     </div>
 
-    <div class="sidebar-chat" id="sidebar">
-        <div id="setup-ui">
-            <p style="color: #53fc18; font-weight: bold; margin-bottom: 20px;">הצ'אט של OdedSVR</p>
-            <button class="btn-kick" onclick="openChat()">פתח צ'אט מחובר</button>
+    <div class="movie-center">
+        <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
+    </div>
+
+    <div class="chat-sidebar" id="sidebar">
+        <div id="ui">
+            <p style="color: #53fc18; font-size: 14px; margin-bottom: 10px;">צ'אט OdedSVR</p>
+            <button class="btn-kick" onclick="openChat()">הפעל צ'אט</button>
         </div>
     </div>
 </div>
 
 <script>
     function openChat() {
-        const username = 'odedsvr';
         const sidebar = document.getElementById('sidebar');
         const rect = sidebar.getBoundingClientRect();
         
-        // פתיחת הצ'אט בדיוק מעל הסיידבר
         window.open(
-            `https://kick.com/popout/${username}/chat`, 
+            `https://kick.com/popout/odedsvr/chat`, 
             'KickChat', 
-            `width=350,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
+            `width=340,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
         );
 
-        document.getElementById('setup-ui').innerHTML = 
-            '<p style="color: #53fc18;">הצ\'אט פעיל!</p><p style="color:#666; font-size:12px;">הוא יושב בדיוק כאן.</p>';
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">צ\'אט מחובר</p>';
     }
 </script>
 
