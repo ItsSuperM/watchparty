@@ -2,88 +2,69 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OdedSVR - One Link Watch Party</title>
+    <title>OdedSVR - Total Solution</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
-        
-        .main-content { flex: 4; display: flex; flex-direction: column; background: #000; }
-        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; position: relative; }
+        .main-content { flex: 4; display: flex; flex-direction: column; }
+        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; }
         .camera-area { flex: 1.2; background: #000; }
-
-        .sidebar { flex: 1.2; min-width: 320px; background: #18181b; display: flex; flex-direction: column; border-left: 1px solid #333; }
+        .sidebar { flex: 1.2; min-width: 320px; background: #18181b; border-left: 1px solid #333; position: relative; }
         
-        /* אזור הצ'אט */
-        #chat-container { flex: 1; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* כפתור התחברות חכם */
-        .login-overlay {
+        /* מסך אישור הגישה - זה מה שפותר את בעיית ה-Login */
+        .access-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(24, 24, 27, 0.9);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; text-align: center; padding: 20px;
+            background: #18181b; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px;
         }
-
-        .login-btn {
-            background: #53fc18; color: #000; padding: 15px 25px;
-            border: none; border-radius: 5px; font-weight: bold;
-            cursor: pointer; font-size: 16px; transition: 0.3s;
+        .access-btn {
+            background: #53fc18; color: #000; padding: 15px 20px;
+            border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
         }
-        .login-btn:hover { transform: scale(1.05); background: #45d614; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="main-content">
-        <div class="movie-area">
-            <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
-        </div>
-        <div class="camera-area">
-            <iframe src="https://player.kick.com/odedsvr"></iframe>
-        </div>
+        <div class="movie-area"><iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe></div>
+        <div class="camera-area"><iframe src="https://player.kick.com/odedsvr"></iframe></div>
     </div>
 
     <div class="sidebar">
-        <div id="chat-container">
-            <div id="login-ui" class="login-overlay">
-                <p style="color: #53fc18; margin-bottom: 20px; font-weight: bold;">חייבים להתחבר כדי לכתוב בצ'אט</p>
-                <button class="login-btn" onclick="startLoginFlow()">התחברות מהירה לקיק</button>
-                <p style="color: #888; font-size: 11px; margin-top: 15px;">החלון ייסגר והצ'אט יופעל אוטומטית</p>
-            </div>
-            
-            <iframe id="kick-chat" src=""></iframe>
+        <div id="access-screen" class="access-overlay">
+            <p style="color: #53fc18; font-weight: bold;">כדי לכתוב בצ'אט, כרום צריך אישור ממך:</p>
+            <button class="access-btn" onclick="requestAccess()">לחץ כאן לאישור כתיבה</button>
+            <p style="color: #666; font-size: 11px; margin-top: 15px;">זה יחבר את הצ'אט לחשבון הקיק שלך באופן מיידי.</p>
         </div>
+        <iframe id="kick-chat" src="https://kick.com/popout/odedsvr/chat"></iframe>
     </div>
 </div>
 
 <script>
-    let loginWindow;
-
-    function startLoginFlow() {
-        // 1. פותח את דף ההתחברות הרשמי בחלון נפרד
-        loginWindow = window.open('https://kick.com/login', 'KickLogin', 'width=500,height=700');
-
-        // 2. מפעיל "טיימר בדיקה"
-        const checkStatus = setInterval(() => {
-            if (loginWindow.closed) {
-                clearInterval(checkStatus);
-                activateChat();
+    async function requestAccess() {
+        // שלב 1: בדיקה אם הדפדפן תומך בבקשת גישה לעוגיות (API של 2026)
+        if (document.requestStorageAccess) {
+            try {
+                await document.requestStorageAccess();
+                // אם המשתמש אישר, אנחנו מרעננים את הצ'אט
+                console.log("Access granted!");
+            } catch (err) {
+                console.log("Access denied, but we will try a popup sync.");
             }
-        }, 1000);
-    }
+        }
 
-    function activateChat() {
-        const chatIframe = document.getElementById('kick-chat');
-        const loginUI = document.getElementById('login-ui');
+        // שלב 2: פתיחת חלון פופאפ קטנטן שנסגר מיד - זה "מנער" את העוגיות של כרום
+        const sync = window.open('https://kick.com/popout/odedsvr/chat', 'sync', 'width=10,height=10,left=-1000,top=-1000');
         
-        // 3. טוען את הצ'אט עם ה-Parent הנכון
-        chatIframe.src = "https://kick.com/popout/odedsvr/chat?parent=github.io";
-        
-        // 4. מעלים את כפתור ההתחברות ומציג את הצ'אט
-        loginUI.style.display = 'none';
-        chatIframe.style.display = 'block';
+        setTimeout(() => {
+            if (sync) sync.close();
+            // טעינה מחדש של ה-iframe כדי שיזהה את ה-Session
+            document.getElementById('kick-chat').src = "https://kick.com/popout/odedsvr/chat";
+            document.getElementById('access-screen').style.display = 'none';
+        }, 2000);
     }
 </script>
 
