@@ -2,53 +2,46 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - Right Sidebar Mode</title>
+    <title>Stream Watch Party - Fixed Sidebar</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         
-        .main-layout { 
-            display: flex; 
-            height: 100vh; 
-            width: 100vw; 
-        }
+        .main-layout { display: flex; height: 100vh; width: 100vw; }
 
-        /* צד שמאל: הסרט (תופס את כל מה שנשאר) */
-        .movie-section { 
-            flex: 1; 
-            background: #000;
-            border-left: 1px solid #333;
-        }
+        /* הסרט בצד שמאל - תופס הכל */
+        .movie-section { flex: 1; background: #000; }
 
-        /* צד ימין: עמודה ללייב וצ'אט */
+        /* עמודה ימנית קבועה */
         .right-sidebar { 
             width: 350px; 
             display: flex;
             flex-direction: column;
             background: #18181b;
+            border-left: 1px solid #333;
         }
 
-        /* הלייב בחלק העליון של הצד הימני */
+        /* הלייב למעלה - גובה מחושב לפי רוחב 350px */
         .live-top { 
-            height: 250px; /* גובה קבוע ללייב כדי שלא יתפוס הכל */
+            width: 350px;
+            height: 197px; /* יחס 16:9 מושלם ללייב */
             background: #000;
             border-bottom: 2px solid #53fc18;
         }
 
-        /* האזור שמתחת ללייב שבו יושב הצ'אט */
-        .chat-bottom { 
+        /* האזור שמתחת ללייב לצ'אט */
+        .chat-area-placeholder { 
             flex: 1; 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
+            background: #101012;
         }
 
         .btn-kick {
             background: #53fc18; color: #000; padding: 12px 20px; border: none;
-            border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
         }
-        .btn-kick:hover { transform: scale(1.05); }
 
         iframe { width: 100%; height: 100%; border: none; }
     </style>
@@ -65,10 +58,9 @@
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
         
-        <div class="chat-bottom" id="chat-anchor">
+        <div class="chat-area-placeholder" id="chat-anchor">
             <div id="ui">
-                <p style="color: #53fc18; font-size: 14px; margin-bottom: 10px;">מוכן להפעיל צ'אט?</p>
-                <button class="btn-kick" onclick="openChat()">הפעל צ'אט מחובר</button>
+                <button class="btn-kick" onclick="openChat()">פתח צ'אט במידה הנכונה</button>
             </div>
         </div>
     </div>
@@ -77,19 +69,29 @@
 <script>
     function openChat() {
         const username = 'odedsvr';
-        
-        // מוצאים איפה האזור של הצ'אט מתחיל מבחינת גובה
         const anchor = document.getElementById('chat-anchor');
         const rect = anchor.getBoundingClientRect();
         
-        // פותח את החלון בדיוק מתחת ללייב
-        window.open(
+        // הוספתי Math.floor כדי שהמספרים יהיו שלמים
+        const w = 350;
+        const h = Math.floor(rect.height);
+        const l = Math.floor(window.screenLeft + rect.left);
+        const t = Math.floor(window.screenTop + rect.top);
+
+        // שינוי שם החלון ל-'KickChatFixed' כדי שהדפדפן לא ימחזר הגדרות ישנות
+        const chatWin = window.open(
             `https://kick.com/popout/${username}/chat`, 
-            'KickChat', 
-            `width=350,height=${rect.height},left=${window.screenLeft + rect.left},top=${window.screenTop + rect.top}`
+            'KickChatFixed', 
+            `width=${w},height=${h},left=${l},top=${t},menubar=no,toolbar=no,location=no`
         );
 
-        document.getElementById('ui').innerHTML = '<p style="color: #53fc18; font-weight: bold;">הצ' + 'אט פעיל!</p>';
+        // כפיית גודל ליתר ביטחון אם הדפדפן מתעלם מה-Popup settings
+        if (chatWin) {
+            chatWin.resizeTo(w, h);
+            chatWin.moveTo(l, t);
+        }
+
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ' + 'אט נפתח מתחת ללייב!</p>';
     }
 </script>
 
