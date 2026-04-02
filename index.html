@@ -2,50 +2,50 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - OdedSVR</title>
+    <title>Stream Watch Party - No Black Bars</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         
         .main-layout { display: flex; height: 100vh; width: 100vw; }
 
-        /* הסרט תופס את כל צד שמאל והמרכז */
-        .movie-section { 
-            flex: 1; 
-            background: #000;
+        /* הסרט - תופס את כל צד שמאל */
+        .movie-section { flex: 1; background: #000; }
+
+        /* סיידבר ימני רחב - מכיל את הלייב והצ'אט אחד ליד השני */
+        .dual-sidebar { 
+            width: 700px; /* רוחב מספיק לשני טורים של 350px */
+            display: flex;
+            background: #18181b;
+            border-left: 2px solid #53fc18;
         }
 
-        /* סיידבר ימני אחד ללייב ולצ'אט */
-        .sidebar { 
-            width: 350px; 
+        /* טור הלייב - מחושב לפי יחס 16:9 */
+        .live-column { 
+            width: 350px;
             display: flex;
-            flex-direction: column;
-            background: #18181b;
+            align-items: center; /* ממרכז את הוידאו אנכית כדי שלא ימתח */
+            background: #000;
             border-left: 1px solid #333;
         }
 
-        /* הלייב למעלה - גובה פרופורציונלי ל-350px */
-        .live-top { 
-            width: 350px;
-            height: 197px; 
-            background: #000;
-            border-bottom: 2px solid #53fc18;
+        .live-container {
+            width: 100%;
+            height: 197px; /* חישוב: 350 חלקי 1.77 */
         }
 
-        /* אזור כפתור ההפעלה של הצ'אט */
-        .chat-trigger-area { 
-            flex: 1; 
+        /* טור הצ'אט */
+        .chat-column { 
+            width: 350px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #101012;
-            text-align: center;
-            padding: 20px;
         }
 
         .btn-kick {
             background: #53fc18; color: #000; padding: 12px 25px; border: none;
-            border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -58,14 +58,15 @@
         <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 
-    <div class="sidebar">
-        <div class="live-top">
-            <iframe src="https://player.kick.com/odedsvr"></iframe>
+    <div class="dual-sidebar">
+        <div class="live-column">
+            <div class="live-container">
+                <iframe src="https://player.kick.com/odedsvr"></iframe>
+            </div>
         </div>
         
-        <div class="chat-trigger-area" id="chat-box">
+        <div class="chat-column" id="chat-anchor">
             <div id="ui">
-                <p style="color: #53fc18; font-size: 14px; margin-bottom: 15px;">הלייב מחובר!<br>לחץ להפעלת הצ'אט מתחתיו:</p>
                 <button class="btn-kick" onclick="openChat()">הפעל צ'אט</button>
             </div>
         </div>
@@ -75,17 +76,17 @@
 <script>
     function openChat() {
         const username = 'odedsvr';
-        const chatBox = document.getElementById('chat-box');
-        const rect = chatBox.getBoundingClientRect();
+        const anchor = document.getElementById('chat-anchor');
+        const rect = anchor.getBoundingClientRect();
         
-        // פותח את הצ'אט בדיוק מתחת ללייב ובדיוק בגובה שנשאר
+        // פותח את הצ'אט על כל הגובה כדי למנוע את ה"מעיכה" שראינו בתמונות
         window.open(
             `https://kick.com/popout/${username}/chat`, 
             'KickChatFinal', 
-            `width=350,height=${rect.height},left=${window.screenLeft + rect.left},top=${window.screenTop + rect.top}`
+            `width=350,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
         );
 
-        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ' + 'אט פעיל מתחת ללייב!</p>';
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18; font-weight: bold;">הצ\'אט פעיל בטור הימני!</p>';
     }
 </script>
 
