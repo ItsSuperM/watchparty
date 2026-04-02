@@ -3,76 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdedSVR - Creative Watch Party</title>
+    <title>OdedSVR - Professional Watch Party</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
         
-        /* אזור הסרט - השמאלי והגדול */
-        .movie-area { flex: 4; background: #000; position: relative; box-shadow: inset -10px 0 20px rgba(0,0,0,0.5); }
+        /* אזור הסרט */
+        .movie-area { flex: 4; background: #000; position: relative; }
         
-        /* אזור הצד - ימני */
+        /* אזור הסטרימר */
         .sidebar { flex: 1.2; min-width: 350px; display: flex; flex-direction: column; background: #18181b; border-left: 1px solid #2d2d30; }
         
-        /* המצלמה של הסטרימר */
-        .camera { height: 30%; background: #000; border-bottom: 2px solid #53fc18; position: relative; }
+        .camera { height: 30%; background: #000; border-bottom: 2px solid #53fc18; }
         
-        /* אזור הצ'אט - נראה כאילו הוא בפנים */
-        .chat-area { flex: 1; display: flex; flex-direction: column; position: relative; background: #0b0e0f; }
-        
-        iframe { width: 100%; height: 100%; border: none; }
-
-        /* תיבת ה"כתיבה" היצירתית בתחתית */
-        .fake-input-area {
-            background: #18181b;
-            padding: 15px;
-            border-top: 1px solid #2d2d30;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        /* אזור ה"חור" לצ'אט */
+        .chat-placeholder { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background: #0b0e0f; 
+            color: #53fc18;
+            text-align: center;
+            padding: 20px;
         }
 
-        .login-btn {
+        .kick-btn {
             background: #53fc18;
             color: #000;
-            text-align: center;
-            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
             font-weight: bold;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(83, 252, 24, 0.2);
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(83, 252, 24, 0.4);
         }
 
-        .login-btn:hover {
-            background: #46d614;
-            transform: translateY(-2px);
-        }
-
-        .hint {
-            color: #adadb8;
-            font-size: 11px;
-            text-align: center;
-        }
-
-        /* מגן מפני לחיצות בתוך ה-iframe שמשבשות את הניווט */
-        .chat-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: calc(100% - 60px);
-            z-index: 5;
-            pointer-events: none; /* מאפשר גלילה אבל מונע לחיצות על לינקים פנימיים */
-        }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="movie-area">
-        <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 
     <div class="sidebar">
@@ -80,42 +56,51 @@
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
         
-        <div class="chat-area">
-            <div class="chat-overlay"></div>
-            <iframe id="kick-chat" src="https://kick.com/popout/odedsvr/chat"></iframe>
-            
-            <div class="fake-input-area">
-                <a href="#" onclick="openSecureChat(); return false;" class="login-btn">
-                    💬 לחץ כאן כדי להתחבר ולכתוב
-                </a>
-                <div class="hint">
-                    הצ'אט יפתח בחלון נפרד כדי לאפשר התחברות בטוחה.<br>
-                    ההודעות שלכם יופיעו כאן באתר מיד!
-                </div>
+        <div id="chat-box" class="chat-placeholder">
+            <div id="setup-ui">
+                <h3>הצ'אט של קיק</h3>
+                <p>כדי שהצ'אט יעבוד בתוך האתר ללא שגיאות התחברות:</p>
+                <button class="kick-btn" onclick="attachChat()">לחץ לחיבור הצ'אט</button>
             </div>
+            <p id="status-text" style="display:none; color: #adadb8; font-size: 12px; margin-top: 10px;">
+                הצ'אט הוצמד בהצלחה! (אם הוא נעלם, לחץ שוב)
+            </p>
         </div>
     </div>
 </div>
 
 <script>
-    function openSecureChat() {
+    let chatWin = null;
+
+    function attachChat() {
         const username = 'OdedSVR';
         const url = `https://kick.com/popout/${username}/chat`;
         
-        // פותח חלון נפרד - זה הפתרון היחיד שמאפשר LOGIN בכרום
-        const chatWindow = window.open(url, 'KickChat', 'width=400,height=600,menubar=no,toolbar=no,location=no,status=no');
+        // חישוב מיקום מדויק: אנחנו מוצאים איפה ה-Sidebar נמצא על המסך של הצופה
+        const chatBox = document.getElementById('chat-box');
+        const rect = chatBox.getBoundingClientRect();
         
-        if (chatWindow) {
-            chatWindow.focus();
+        // פתיחת חלון חדש בגודל המדויק של ה-Sidebar ובמיקום שלו
+        const w = rect.width;
+        const h = rect.height;
+        const left = window.screenX + rect.left;
+        const top = window.screenY + rect.top + (window.outerHeight - window.innerHeight);
+
+        // פתיחת ה"חלון המרחף"
+        chatWin = window.open(url, 'KickChatHost', 
+            `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+        );
+
+        if (chatWin) {
+            document.getElementById('setup-ui').style.opacity = "0.2";
+            document.getElementById('status-text').style.display = "block";
+            
+            // טריק: כשהמשתמש מזיז את החלון הראשי, החלון המרחף עוקב אחריו (אופציונלי)
+            window.onbeforeunload = () => chatWin.close();
         } else {
-            alert("הדפדפן חסם את פתיחת הצ'אט. נא לאשר פופ-אפים באתר זה.");
+            alert("נא אשר פופ-אפים כדי להציג את הצ'אט!");
         }
     }
-
-    // רענון אוטומטי קל לצ'אט כל 10 דקות כדי למנוע קיפאון
-    setInterval(() => {
-        document.getElementById('kick-chat').src = document.getElementById('kick-chat').src;
-    }, 600000);
 </script>
 
 </body>
