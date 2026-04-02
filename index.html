@@ -84,12 +84,15 @@
 
 <script>
 function openChat() {
-    // מחליף את YOUR_KICK_USERNAME בשם שלך
     const username = 'OdedSVR';
-    const url = `https://kick.com/popout/${username}/chat`;
+    // פתיחת חלון חדש לגמרי, לא פופ-אפ מוגבל, כדי שכרום ייתן לו גישה מלאה לעוגיות
+    const chatWindow = window.open(`https://kick.com/${username}/chat`, 'KickChat', 'width=500,height=700,resizable=yes,scrollbars=yes');
     
-    // פותח חלון פופ-אפ בגודל נוח
-    window.open(url, 'KickChat', 'width=400,height=650,menubar=no,toolbar=no,location=no,status=no');
+    if (chatWindow) {
+        chatWindow.focus();
+    } else {
+        alert("נא לאשר פופ-אפים בדפדפן כדי לפתוח את הצ'אט");
+    }
 }
 </script>
 
