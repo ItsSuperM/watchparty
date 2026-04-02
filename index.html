@@ -2,30 +2,23 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Odedsvr - One Link Solution</title>
+    <title>OdedSVR - One Link Solution</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; color: white; font-family: sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
-        
         .main-content { flex: 4; display: flex; flex-direction: column; }
-        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; position: relative; }
+        .movie-area { flex: 3; border-bottom: 2px solid #53fc18; background: #000; }
         .camera-area { flex: 1.2; background: #000; }
-
         .sidebar { flex: 1.2; min-width: 320px; background: #18181b; display: flex; flex-direction: column; border-left: 1px solid #333; }
         
         /* אזור הצ'אט */
-        #chat-container { flex: 1; width: 100%; position: relative; }
-        
-        .sync-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 14, 15, 0.95);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; z-index: 10;
-        }
+        #chat-wrapper { flex: 1; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .btn-sync {
-            background: #53fc18; color: #000; padding: 15px 25px; border: none;
-            border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
+        /* הודעת הסנכרון הקטנה */
+        .sync-bar {
+            background: #53fc18; color: #000; padding: 5px; text-align: center;
+            font-size: 12px; font-weight: bold; cursor: pointer;
         }
     </style>
 </head>
@@ -42,37 +35,33 @@
     </div>
 
     <div class="sidebar">
-        <div id="chat-container">
-            <iframe id="final-chat" src="" style="width:100%; height:100%; border:none; display:none;"></iframe>
-            
-            <div id="sync-ui" class="sync-overlay">
-                <p style="color: #53fc18; font-weight: bold;">כדי לכתוב בצ'אט בתוך האתר:</p>
-                <button class="btn-sync" onclick="syncAndStart()">סנכרן חשבון קיק</button>
-                <p style="color: #666; font-size: 11px; margin-top: 15px;">הפעולה תפתח חלון התחברות קטן שייסגר אוטומטית ויחבר אותך לאתר.</p>
-            </div>
+        <div class="sync-bar" onclick="quickSync()">
+            לחץ כאן פעם אחת להפעלת הצ'אט
+        </div>
+        <div id="chat-wrapper">
+            <iframe id="kick-chat" src="https://kick.com/popout/odedsvr/chat"></iframe>
         </div>
     </div>
 </div>
 
 <script>
-    function syncAndStart() {
-        const username = 'OdedSVR';
-        const loginUrl = "https://kick.com/login";
-        const chatUrl = `https://kick.com/popout/${username}/chat`;
+    function quickSync() {
+        // פותח חלון קטן מאוד וסוגר אותו אחרי 2 שניות
+        // זה גורם לכרום להעביר את העוגיות לתוך ה-iframe באופן זמני
+        const syncWin = window.open('https://kick.com/popout/odedsvr/chat', 'Sync', 'width=100,height=100,left=-1000,top=-1000');
+        
+        const bar = document.querySelector('.sync-bar');
+        bar.innerHTML = "מסנכרן... מיד מסיימים";
+        bar.style.background = "#ffb300";
 
-        // 1. פותח חלון התחברות מקורי של קיק (כדי שכרום יאשר את העוגיות)
-        const authWin = window.open(loginUrl, 'KickAuth', 'width=450,height=600');
-
-        // 2. מחכה 3 שניות (זמן להתחברות/זיהוי) ואז מחליף את הצ'אט בתוך האתר
         setTimeout(() => {
-            const chatIframe = document.getElementById('final-chat');
-            chatIframe.src = chatUrl;
-            chatIframe.style.display = "block";
-            document.getElementById('sync-ui').style.display = "none";
-            
-            // הצופה יכול לסגור את החלון הקטן ידנית או שהוא יישאר ברקע
-            alert("החשבון סונכרן! עכשיו אפשר לכתוב בצ'אט בתוך האתר.");
-        }, 4000);
+            if (syncWin) syncWin.close();
+            // מרענן רק את ה-iframe של הצ'אט
+            document.getElementById('kick-chat').src = document.getElementById('kick-chat').src;
+            bar.innerHTML = "הצ'אט מחובר! תהנו";
+            bar.style.background = "#53fc18";
+            setTimeout(() => { bar.style.display = 'none'; }, 3000);
+        }, 3000);
     }
 </script>
 
