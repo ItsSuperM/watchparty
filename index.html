@@ -2,35 +2,33 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - Fixed Sidebar</title>
+    <title>Stream Watch Party - Final Layout</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         
         .main-layout { display: flex; height: 100vh; width: 100vw; }
 
-        /* הסרט בצד שמאל - תופס הכל */
+        /* הסרט - תופס את כל צד שמאל */
         .movie-section { flex: 1; background: #000; }
 
-        /* עמודה ימנית קבועה */
+        /* סיידבר ימני רחב יותר כדי להכיל גם לייב וגם צ'אט */
         .right-sidebar { 
-            width: 350px; 
+            width: 600px; /* הגדלנו את הרוחב כדי שיהיה מקום לשניהם */
             display: flex;
-            flex-direction: column;
             background: #18181b;
             border-left: 1px solid #333;
         }
 
-        /* הלייב למעלה - גובה מחושב לפי רוחב 350px */
-        .live-top { 
-            width: 350px;
-            height: 197px; /* יחס 16:9 מושלם ללייב */
+        /* חלק הלייב בתוך הסיידבר */
+        .live-column { 
+            width: 300px; 
+            border-left: 1px solid #333;
             background: #000;
-            border-bottom: 2px solid #53fc18;
         }
 
-        /* האזור שמתחת ללייב לצ'אט */
-        .chat-area-placeholder { 
-            flex: 1; 
+        /* חלק הצ'אט בתוך הסיידבר */
+        .chat-column { 
+            width: 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -54,13 +52,13 @@
     </div>
 
     <div class="right-sidebar">
-        <div class="live-top" id="live-area">
+        <div class="live-column">
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
         
-        <div class="chat-area-placeholder" id="chat-anchor">
+        <div class="chat-column" id="chat-anchor">
             <div id="ui">
-                <button class="btn-kick" onclick="openChat()">פתח צ'אט במידה הנכונה</button>
+                <button class="btn-kick" onclick="openChat()">פתח צ'אט</button>
             </div>
         </div>
     </div>
@@ -72,26 +70,14 @@
         const anchor = document.getElementById('chat-anchor');
         const rect = anchor.getBoundingClientRect();
         
-        // הוספתי Math.floor כדי שהמספרים יהיו שלמים
-        const w = 350;
-        const h = Math.floor(rect.height);
-        const l = Math.floor(window.screenLeft + rect.left);
-        const t = Math.floor(window.screenTop + rect.top);
-
-        // שינוי שם החלון ל-'KickChatFixed' כדי שהדפדפן לא ימחזר הגדרות ישנות
-        const chatWin = window.open(
+        // פותח את הצ'אט על כל הגובה (כדי שלא יתכווץ כמו בתמונה)
+        window.open(
             `https://kick.com/popout/${username}/chat`, 
-            'KickChatFixed', 
-            `width=${w},height=${h},left=${l},top=${t},menubar=no,toolbar=no,location=no`
+            'KickChatFinal', 
+            `width=340,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
         );
 
-        // כפיית גודל ליתר ביטחון אם הדפדפן מתעלם מה-Popup settings
-        if (chatWin) {
-            chatWin.resizeTo(w, h);
-            chatWin.moveTo(l, t);
-        }
-
-        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ' + 'אט נפתח מתחת ללייב!</p>';
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">צ\'אט פעיל!</p>';
     }
 </script>
 
