@@ -2,47 +2,47 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - Seamless Design</title>
+    <title>Stream Watch Party - Perfect Layout</title>
     <style>
-        /* שימוש בצבע האפור המדויק של WatchParty */
+        /* צבע הרקע האפור המדויק של WatchParty */
         body, html { 
             margin: 0; padding: 0; height: 100%; overflow: hidden; 
-            background: #2d2d2d; /* הצבע האפור של האתר */
+            background: #2d2d2d; 
             font-family: sans-serif; 
         }
         
         .main-layout { display: flex; height: 100vh; width: 100vw; }
 
-        /* הסרט - צד שמאל */
+        /* הסרט בצד שמאל - הכי גדול */
         .movie-section { flex: 1; background: #000; }
 
-        /* סיידבר ימני שמשתלב עם האתר */
-        .sidebar-integrated { 
+        /* סיידבר ימני בשורה נפרדת */
+        .sidebar { 
             width: 350px; 
             display: flex;
             flex-direction: column;
-            background: #2d2d2d; /* אותו צבע אפור */
+            background: #2d2d2d; /* רקע אפור */
             border-left: 1px solid #444;
         }
 
-        /* הלייב למעלה - עם "הסוואה" אפורה */
-        .live-container { 
-            width: 350px;
-            height: 220px; 
-            background: #2d2d2d; /* רקע אפור שמבטל את השחור מסביב ללייב */
+        /* החלק של הלייב - עם הסוואה אפורה */
+        .live-wrapper { 
+            width: 100%;
+            height: 250px; /* גובה קצת יותר גדול מהלייב */
+            background: #2d2d2d; /* כאן האפור מחליף את השחור */
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #53fc18; /* קו ירוק עדין של קיק */
+            border-bottom: 2px solid #53fc18;
         }
 
-        .live-embed {
+        .live-content {
             width: 100%;
-            height: 197px; /* יחס 16:9 */
+            height: 197px; /* יחס 16:9 מושלם */
         }
 
-        /* אזור הצ'אט שמתחת */
-        .chat-placeholder { 
+        /* החלק של הצ'אט - מתחת ללייב */
+        .chat-container { 
             flex: 1; 
             display: flex;
             flex-direction: column;
@@ -66,16 +66,16 @@
         <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 
-    <div class="sidebar-integrated">
-        <div class="live-container">
-            <div class="live-embed">
+    <div class="sidebar">
+        <div class="live-wrapper">
+            <div class="live-content">
                 <iframe src="https://player.kick.com/odedsvr"></iframe>
             </div>
         </div>
         
-        <div class="chat-placeholder" id="chat-anchor">
+        <div class="chat-container" id="chat-anchor">
             <div id="ui">
-                <button class="btn-kick" onclick="openChat()">הפעל צ'אט</button>
+                <button class="btn-kick" onclick="openChat()">פתח צ'אט מחובר</button>
             </div>
         </div>
     </div>
@@ -87,14 +87,14 @@
         const anchor = document.getElementById('chat-anchor');
         const rect = anchor.getBoundingClientRect();
         
-        // פתיחת הצ'אט בדיוק מתחת ללייב על הרקע האפור
+        // פותח את הצ'אט בדיוק מתחת ללייב
         window.open(
             `https://kick.com/popout/${username}/chat`, 
             'KickChatFinal', 
             `width=350,height=${rect.height},left=${window.screenLeft + rect.left},top=${window.screenTop + rect.top}`
         );
 
-        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ\'אט משולב בעיצוב!</p>';
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ\'אט משולב!</p>';
     }
 </script>
 
