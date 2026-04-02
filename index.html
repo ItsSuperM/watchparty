@@ -2,21 +2,19 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OdedSVR - Live Watch Party</title>
+    <title>OdedSVR - Precision Watch Party</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
         
-        /* אזור הסרט */
         .movie-area { flex: 4; background: #000; position: relative; }
         
-        /* אזור הסטרימר */
-        .sidebar { flex: 1.2; min-width: 350px; display: flex; flex-direction: column; background: #18181b; border-left: 2px solid #53fc18; }
+        .sidebar { flex: 1.2; min-width: 350px; display: flex; flex-direction: column; background: #18181b; border-left: 1px solid #53fc18; }
         
         .camera { height: 30%; background: #000; border-bottom: 2px solid #333; }
         
-        /* אזור ה"חור" המיועד לצ'אט */
-        .chat-placeholder { 
+        /* אזור המטרה המדויק */
+        #chat-target { 
             flex: 1; 
             display: flex; 
             flex-direction: column; 
@@ -25,23 +23,20 @@
             background: #0b0e0f; 
             color: #53fc18;
             text-align: center;
-            padding: 20px;
-            border: 2px dashed #333;
-            margin: 10px;
-            border-radius: 10px;
+            border: 2px dashed #2d2d30;
+            margin: 5px;
+            border-radius: 5px;
         }
 
         .connect-btn {
             background: #53fc18;
             color: #000;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
             border: none;
-            font-size: 16px;
-            box-shadow: 0 0 15px rgba(83, 252, 24, 0.3);
-            text-decoration: none;
+            box-shadow: 0 0 15px rgba(83, 252, 24, 0.2);
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -59,41 +54,49 @@
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
         
-        <div id="chat-target" class="chat-placeholder">
-            <h3>הצ'אט של קיק</h3>
-            <p style="color: #adadb8; font-size: 14px;">כדי לכתוב בצ'אט בצורה תקינה בכרום:</p>
-            <button class="connect-btn" onclick="openAndAlignChat()">הפעל צ'אט מוצמד</button>
-            <p style="color: #666; font-size: 11px; margin-top: 15px;">הצ'אט יופיע בדיוק כאן מעל האתר.</p>
+        <div id="chat-target">
+            <h3 style="margin-bottom:5px;">צ'אט קיק</h3>
+            <button class="connect-btn" onclick="openPrecisionChat()">הצמד צ'אט למסך</button>
+            <p style="color: #666; font-size: 10px; margin-top: 10px;">מומלץ לא להזיז את החלון לאחר החיבור.</p>
         </div>
     </div>
 </div>
 
 <script>
-    function openAndAlignChat() {
+    function openPrecisionChat() {
         const username = 'OdedSVR';
         const url = `https://kick.com/popout/${username}/chat`;
         
-        // השלב הקריטי: חישוב המיקום של ה"חור" על המסך של הצופה
         const target = document.getElementById('chat-target');
         const rect = target.getBoundingClientRect();
         
-        // חישוב הקואורדינטות ביחס לחלון הדפדפן
-        const w = rect.width;
-        const h = rect.height;
-        const left = window.screenX + rect.left;
-        const top = window.screenY + rect.top + (window.outerHeight - window.innerHeight);
+        // חישוב הסטייה של מסגרת הדפדפן (Browser Chrome Offset)
+        const borderLeft = window.screenLeft || window.screenX;
+        const borderTop = window.screenTop || window.screenY;
+        
+        // חישוב עובי סרגל הכלים העליון של הדפדפן
+        const browserToolbarHeight = window.outerHeight - window.innerHeight;
+        
+        // מיקומי הפיקסלים המדויקים
+        const winWidth = rect.width;
+        const winHeight = rect.height;
+        const winLeft = borderLeft + rect.left;
+        const winTop = borderTop + rect.top + browserToolbarHeight;
 
-        // פתיחת הצ'אט כחלון נפרד (כדי שה-Login יעבוד) אבל במיקום המדויק של האתר
         const win = window.open(url, 'KickChat', 
-            `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+            `width=${winWidth},height=${winHeight},left=${winLeft},top=${winTop},menubar=no,toolbar=no,location=no,status=no,resizable=yes`
         );
 
         if (win) {
+            // עיצוב מחדש של האזור לאחר החיבור כדי שייראה "נקי"
+            target.style.border = "none";
             target.style.background = "#18181b";
-            target.innerHTML = "<h3>הצ'אט פעיל!</h3><p style='font-size:12px;'>ניתן להקליד בחלון שנפתח.</p>";
-            win.focus();
+            target.innerHTML = "<div style='color:#333; font-size:12px;'>הצ'אט מוצמד.</div>";
+            
+            // פוקוס חזרה לחלון הראשי כדי שהסרט ימשיך לרוץ
+            window.focus();
         } else {
-            alert("נא אשר פופ-אפים בדפדפן כדי להציג את הצ'אט.");
+            alert("נא לאשר פופ-אפים בדפדפן.");
         }
     }
 </script>
