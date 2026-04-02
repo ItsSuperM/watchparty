@@ -1,21 +1,55 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K0nkaMc - Watch Party</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { display: flex; height: 100vh; width: 100vw; }
         
-        /* אזור הסרט - תופס את רוב המסך */
+        /* אזור הסרט */
         .movie-area { flex: 4; background: #111; position: relative; }
         
-        /* אזור הצד - מצלמה וצ'אט */
-        .sidebar { flex: 1; display: flex; flex-direction: column; border-left: 2px solid #53fc18; } /* ירוק של קיק */
+        /* אזור הצד */
+        .sidebar { flex: 1; display: flex; flex-direction: column; border-left: 2px solid #53fc18; background: #18181b; }
         
-        .camera { height: 30%; background: #000; }
-        .chat { height: 70%; background: #18181b; }
+        .camera { height: 35%; background: #000; border-bottom: 1px solid #333; }
+        
+        .chat-container { 
+            height: 65%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            text-align: center; 
+            color: white; 
+        }
+
+        .chat-button {
+            background: #53fc18;
+            color: black;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(83, 252, 24, 0.3);
+        }
+
+        .chat-button:hover {
+            background: #46d614;
+            transform: scale(1.05);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #adadb8;
+        }
         
         iframe { width: 100%; height: 100%; border: none; }
     </style>
@@ -32,16 +66,32 @@
             <iframe src="https://player.kick.com/odedsvr"></iframe>
         </div>
         
-        <div class="chat">
-    <iframe 
-        src="https://kick.com/popout/odedsvr/chat" 
-        allow="clipboard-write"
-        sandbox="allow-auth-form allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-        style="width: 100%; height: 100%; border: none;">
-    </iframe>
-</div>
+        <div class="chat-container">
+            <h3 style="margin-bottom: 10px;">הצ'אט של קיק</h3>
+            <p style="margin-bottom: 20px;">כדי לכתוב בצ'אט בצורה מאובטחת ולראות מי מחובר:</p>
+            
+            <button class="chat-button" onclick="openChat()">
+                🚀 פתח צ'אט בחלונית
+            </button>
+            
+            <div class="instructions">
+                הצ'אט יפתח בחלון קטן נפרד.<br>
+                תוכלו לגרור אותו מעל הסרט!
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+function openChat() {
+    // מחליף את YOUR_KICK_USERNAME בשם שלך
+    const username = 'YOUR_KICK_USERNAME';
+    const url = `https://kick.com/popout/${username}/chat`;
+    
+    // פותח חלון פופ-אפ בגודל נוח
+    window.open(url, 'KickChat', 'width=400,height=650,menubar=no,toolbar=no,location=no,status=no');
+}
+</script>
 
 </body>
 </html>
