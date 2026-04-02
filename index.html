@@ -2,20 +2,32 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OdedSVR - One Screen Watch Party</title>
+    <title>OdedSVR - One Screen Solution</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; }
         .container { display: flex; height: 100vh; width: 100vw; }
         
-        .main-content { flex: 4; display: flex; flex-direction: column; }
+        /* צד שמאל: סרט ומצלמה */
+        .main-content { flex: 4; display: flex; flex-direction: column; background: #000; }
         .movie-area { flex: 3; border-bottom: 2px solid #53fc18; }
         .camera-area { flex: 1.2; background: #000; }
 
+        /* צד ימין: הצ'אט המיוחד */
         .sidebar { flex: 1.2; min-width: 320px; background: #18181b; display: flex; flex-direction: column; border-left: 1px solid #333; }
         
-        /* הקסם - צ'אט שעוקף את החסימה של קיק */
-        .chat-container { flex: 1; width: 100%; height: 100%; }
-        iframe { width: 100%; height: 100%; border: none; }
+        /* שימוש בגרסה ה"קלה" של קיק שמיועדת לאפליקציות צד שלישי */
+        .chat-iframe { flex: 1; width: 100%; height: 100%; border: none; }
+        
+        .fix-button {
+            background: #53fc18;
+            color: #000;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -31,27 +43,18 @@
     </div>
 
     <div class="sidebar">
-    <div class="chat-header">צ'אט חי - STREAMER_NAME</div>
-    
-    <iframe 
-        src="https://kick.com/popout/odedsvr/chat?parent=github.io&addon=true" 
-        id="kick-chat"
-        allow="clipboard-write"
-        style="flex: 1; border: none; width: 100%; height: 100%;">
-    </iframe>
+        <a href="https://kick.com/login" target="login-flow" 
+           onclick="window.open('https://kick.com/login', 'login-flow', 'width=400,height=600'); return false;" 
+           class="fix-button">
+           שלב 1: לחץ כאן להתחברות מהירה (פעם אחת)
+        </a>
+        
+        <iframe 
+            src="https://kick.com/popout/odedsvr/chat?parent=github.io" 
+            class="chat-iframe">
+        </iframe>
+    </div>
 </div>
-
-<script>
-    /* התיקון היצירתי ב-JavaScript שגורם לכרום "לחשוב" שאתה בקיק */
-    document.getElementById('kick-chat').onload = function() {
-        try {
-            // אנחנו מנסים "ללחוץ" אוטומטית על תיבת הטקסט כדי להעיר אותה
-            this.contentWindow.focus();
-        } catch(e) {
-            console.log("Browser security handled.");
-        }
-    };
-</script>
 
 </body>
 </html>
