@@ -2,36 +2,46 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OdedSVR - הכל במקום אחד</title>
+    <title>OdedSVR - Live Watch Party</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
-        .wrapper { display: flex; width: 100vw; height: 100vh; }
-
-        /* אזור הסרט והמצלמה - צד שמאל */
-        .content-left {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            background: #000;
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
+        .container { display: flex; height: 100vh; width: 100vw; }
+        
+        /* אזור הסרט */
+        .movie-area { flex: 4; background: #000; position: relative; }
+        
+        /* אזור הסטרימר */
+        .sidebar { flex: 1.2; min-width: 350px; display: flex; flex-direction: column; background: #18181b; border-left: 2px solid #53fc18; }
+        
+        .camera { height: 30%; background: #000; border-bottom: 2px solid #333; }
+        
+        /* אזור ה"חור" המיועד לצ'אט */
+        .chat-placeholder { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background: #0b0e0f; 
+            color: #53fc18;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #333;
+            margin: 10px;
+            border-radius: 10px;
         }
 
-        .movie-box { height: 70%; background: #000; position: relative; }
-        .camera-box { height: 30%; background: #000; border-top: 2px solid #53fc18; }
-
-        /* אזור הצ'אט - צד ימין */
-        .chat-right {
-            flex: 1.2;
-            min-width: 350px;
-            background: #18181b;
-            position: relative;
-        }
-
-        /* כאן הקסם: אנחנו משתמשים ב-URL של הצ'אט המלא, לא ה-Popout! */
-        /* זה גורם לכרום לחשוב שזה דף רגיל ולא מסגרת כלואה */
-        .secure-chat {
-            width: 100%;
-            height: 100%;
+        .connect-btn {
+            background: #53fc18;
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
             border: none;
+            font-size: 16px;
+            box-shadow: 0 0 15px rgba(83, 252, 24, 0.3);
+            text-decoration: none;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
@@ -39,25 +49,54 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="content-left">
-        <div class="movie-box">
-            <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
-        </div>
-        <div class="camera-box">
-            <iframe src="https://player.kick.com/odedsvr"></iframe>
-        </div>
+<div class="container">
+    <div class="movie-area">
+        <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 
-    <div class="chat-right">
-        <iframe 
-            src="https://kick.com/odedsvr/chat" 
-            class="secure-chat"
-            allow="clipboard-write"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-        ></iframe>
+    <div class="sidebar">
+        <div class="camera">
+            <iframe src="https://player.kick.com/odedsvr"></iframe>
+        </div>
+        
+        <div id="chat-target" class="chat-placeholder">
+            <h3>הצ'אט של קיק</h3>
+            <p style="color: #adadb8; font-size: 14px;">כדי לכתוב בצ'אט בצורה תקינה בכרום:</p>
+            <button class="connect-btn" onclick="openAndAlignChat()">הפעל צ'אט מוצמד</button>
+            <p style="color: #666; font-size: 11px; margin-top: 15px;">הצ'אט יופיע בדיוק כאן מעל האתר.</p>
+        </div>
     </div>
 </div>
+
+<script>
+    function openAndAlignChat() {
+        const username = 'OdesSVR';
+        const url = `https://kick.com/popout/${username}/chat`;
+        
+        // השלב הקריטי: חישוב המיקום של ה"חור" על המסך של הצופה
+        const target = document.getElementById('chat-target');
+        const rect = target.getBoundingClientRect();
+        
+        // חישוב הקואורדינטות ביחס לחלון הדפדפן
+        const w = rect.width;
+        const h = rect.height;
+        const left = window.screenX + rect.left;
+        const top = window.screenY + rect.top + (window.outerHeight - window.innerHeight);
+
+        // פתיחת הצ'אט כחלון נפרד (כדי שה-Login יעבוד) אבל במיקום המדויק של האתר
+        const win = window.open(url, 'KickChat', 
+            `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+        );
+
+        if (win) {
+            target.style.background = "#18181b";
+            target.innerHTML = "<h3>הצ'אט פעיל!</h3><p style='font-size:12px;'>ניתן להקליד בחלון שנפתח.</p>";
+            win.focus();
+        } else {
+            alert("נא אשר פופ-אפים בדפדפן כדי להציג את הצ'אט.");
+        }
+    }
+</script>
 
 </body>
 </html>
