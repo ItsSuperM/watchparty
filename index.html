@@ -2,45 +2,53 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Stream Watch Party - No Black Bars</title>
+    <title>Stream Watch Party - Seamless Design</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0e0f; font-family: sans-serif; }
+        /* שימוש בצבע האפור המדויק של WatchParty */
+        body, html { 
+            margin: 0; padding: 0; height: 100%; overflow: hidden; 
+            background: #2d2d2d; /* הצבע האפור של האתר */
+            font-family: sans-serif; 
+        }
         
         .main-layout { display: flex; height: 100vh; width: 100vw; }
 
-        /* הסרט - תופס את כל צד שמאל */
+        /* הסרט - צד שמאל */
         .movie-section { flex: 1; background: #000; }
 
-        /* סיידבר ימני רחב - מכיל את הלייב והצ'אט אחד ליד השני */
-        .dual-sidebar { 
-            width: 700px; /* רוחב מספיק לשני טורים של 350px */
+        /* סיידבר ימני שמשתלב עם האתר */
+        .sidebar-integrated { 
+            width: 350px; 
             display: flex;
-            background: #18181b;
-            border-left: 2px solid #53fc18;
+            flex-direction: column;
+            background: #2d2d2d; /* אותו צבע אפור */
+            border-left: 1px solid #444;
         }
 
-        /* טור הלייב - מחושב לפי יחס 16:9 */
-        .live-column { 
+        /* הלייב למעלה - עם "הסוואה" אפורה */
+        .live-container { 
             width: 350px;
+            height: 220px; 
+            background: #2d2d2d; /* רקע אפור שמבטל את השחור מסביב ללייב */
             display: flex;
-            align-items: center; /* ממרכז את הוידאו אנכית כדי שלא ימתח */
-            background: #000;
-            border-left: 1px solid #333;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #53fc18; /* קו ירוק עדין של קיק */
         }
 
-        .live-container {
+        .live-embed {
             width: 100%;
-            height: 197px; /* חישוב: 350 חלקי 1.77 */
+            height: 197px; /* יחס 16:9 */
         }
 
-        /* טור הצ'אט */
-        .chat-column { 
-            width: 350px;
+        /* אזור הצ'אט שמתחת */
+        .chat-placeholder { 
+            flex: 1; 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #101012;
+            background: #2d2d2d;
         }
 
         .btn-kick {
@@ -58,14 +66,14 @@
         <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 
-    <div class="dual-sidebar">
-        <div class="live-column">
-            <div class="live-container">
+    <div class="sidebar-integrated">
+        <div class="live-container">
+            <div class="live-embed">
                 <iframe src="https://player.kick.com/odedsvr"></iframe>
             </div>
         </div>
         
-        <div class="chat-column" id="chat-anchor">
+        <div class="chat-placeholder" id="chat-anchor">
             <div id="ui">
                 <button class="btn-kick" onclick="openChat()">הפעל צ'אט</button>
             </div>
@@ -79,14 +87,14 @@
         const anchor = document.getElementById('chat-anchor');
         const rect = anchor.getBoundingClientRect();
         
-        // פותח את הצ'אט על כל הגובה כדי למנוע את ה"מעיכה" שראינו בתמונות
+        // פתיחת הצ'אט בדיוק מתחת ללייב על הרקע האפור
         window.open(
             `https://kick.com/popout/${username}/chat`, 
             'KickChatFinal', 
-            `width=350,height=${window.innerHeight},left=${window.screenLeft + rect.left},top=${window.screenTop}`
+            `width=350,height=${rect.height},left=${window.screenLeft + rect.left},top=${window.screenTop + rect.top}`
         );
 
-        document.getElementById('ui').innerHTML = '<p style="color: #53fc18; font-weight: bold;">הצ\'אט פעיל בטור הימני!</p>';
+        document.getElementById('ui').innerHTML = '<p style="color: #53fc18;">הצ\'אט משולב בעיצוב!</p>';
     }
 </script>
 
