@@ -2,109 +2,63 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Watch Party - OdedSVR Final</title>
-    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
+    <title>Kick Watch Party Interface</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #2d2d2d; font-family: sans-serif; }
-        .layout { display: flex; height: 100vh; width: 100vw; flex-direction: row-reverse; } /* סיידבר בימין */
         
-        .movie-section { flex: 1; background: #000; border-left: 1px solid #444; }
-        
+        /* סידור המסך: הסרט משמאל, הסיידבר מימין */
+        .main-container { display: flex; height: 100vh; width: 100vw; flex-direction: row-reverse; }
+
+        /* הסרט - WatchParty */
+        .video-main { flex: 1; background: #000; }
+
+        /* סיידבר ימני (לייב + צ'אט) */
         .sidebar { 
             width: 350px; 
             display: flex; 
             flex-direction: column; 
             background: #18181b; 
+            border-left: 1px solid #444; 
         }
 
-        /* שילוב הלייב עם רקע אפור למניעת שטחים שחורים */
-        .live-row { 
+        /* אזור הלייב העליון - רקע אפור כדי להעלים את השחור */
+        .live-top-section { 
             width: 100%; 
             height: 220px; 
-            background: #2d2d2d; 
+            background: #2d2d2d; /* הצבע האפור של האתר שביקשת */
             display: flex; 
             align-items: center; 
             justify-content: center;
             border-bottom: 2px solid #53fc18;
         }
 
-        .live-iframe-wrapper { width: 100%; height: 197px; }
+        .live-iframe-holder { width: 100%; height: 197px; }
 
-        /* חלון הצ'אט המובנה */
-        #chat-window {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-            color: #efeff1;
-            font-size: 14px;
-            background: #0e0e10;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        /* אזור הצ'אט התחתון - שימוש ב-Embed רשמי */
+        .chat-bottom-section { flex: 1; background: #0b0e0f; }
 
-        .message { border-bottom: 1px solid #1f1f23; padding-bottom: 4px; }
-        .sender { font-weight: bold; color: #53fc18; margin-left: 5px; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-<div class="layout">
+<div class="main-container">
     <div class="sidebar">
-        <div class="live-row">
-            <div class="live-iframe-wrapper">
+        <div class="live-top-section">
+            <div class="live-iframe-holder">
                 <iframe src="https://player.kick.com/odedsvr"></iframe>
             </div>
         </div>
-        <div id="chat-window">מתחבר לצ'אט של עודד...</div>
+        
+        <div class="chat-bottom-section">
+            <iframe src="https://kick.com/popout/odedsvr/chat"></iframe>
+        </div>
     </div>
 
-    <div class="movie-section">
+    <div class="video-main">
         <iframe src="https://www.watchparty.me/watch/puffy-expansion-withdraw" allowfullscreen></iframe>
     </div>
 </div>
-
-<script>
-    // הגדרות חיבור ל-Kick
-    const PUSHER_KEY = 'eb1d5f2830865360980d';
-    const CHATROOM_ID = '2443015'; // ה-ID העדכני של עודד
-
-    const chatWindow = document.getElementById('chat-window');
-
-    try {
-        const pusher = new Pusher(PUSHER_KEY, {
-            cluster: 'us2',
-            forceTLS: true
-        });
-
-        const channel = pusher.subscribe(`chatrooms.${CHATROOM_ID}.v2`);
-
-        channel.bind('App\\Events\\ChatMessageEvent', function(data) {
-            if (chatWindow.innerText.includes('מתחבר')) chatWindow.innerHTML = '';
-            
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message';
-            const userColor = data.sender.identity.color || '#53fc18';
-            
-            msgDiv.innerHTML = `<span class="sender" style="color:${userColor}">${data.sender.username}:</span> <span>${data.content}</span>`;
-            
-            chatWindow.appendChild(msgDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        });
-
-        pusher.connection.bind('connected', () => {
-            chatWindow.innerHTML = '<div style="color:#53fc18; text-align:center;">הצ\'אט מחובר!</div>';
-        });
-
-        pusher.connection.bind('error', () => {
-            chatWindow.innerHTML = '<div style="color:#ff4444; text-align:center;">שגיאה בחיבור. נסה לרענן.</div>';
-        });
-
-    } catch (err) {
-        chatWindow.innerHTML = '<div style="color:#ff4444; text-align:center;">חסימת דפדפן. וודא שאתה מריץ דרך שרת/GitHub.</div>';
-    }
-</script>
 
 </body>
 </html>
